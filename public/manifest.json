@@ -1,0 +1,13 @@
+{
+  "name": "adrianu.com.br",
+  "short_name": "adrianu.com.br",
+  "start_url": ".",
+  "display": "standalone",
+  "background_color": "#4797C7",
+  "description": "A repository of personal ideas of Adriano Caetano.",
+  "icons": [{
+    "src": "www/images/icon.png",
+    "sizes": "67x67",
+    "type": "image/png"
+  }]
+}
