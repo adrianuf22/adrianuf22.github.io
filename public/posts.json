@@ -2,30 +2,15 @@
   {
     "slug": "2026-08-31-welcome-to-my-blog",
     "title": "Welcome to My Blog",
-    "date": "2026-08-31T00:00:00.000Z",
-    "formattedDate": "August 30, 2026",
-    "summary": "Welcome to my personal blog & site! Here I write about software engineering, web development, and building modern web apps.",
+    "date": "2026-08-31T22:53:10.000Z",
+    "formattedDate": "August 31, 2026",
+    "summary": "Welcome to my personal blog & site! A place to share my knowledge and experiences as a software engineer.",
     "tags": [
       "general",
       "welcome",
       "software-engineering"
     ],
     "readingTime": "1 min read",
-    "html": "<h1>Welcome to My Blog!</h1>\n<p>Hello world! I&#39;m <strong>Adriano Caetano</strong> (<code>adrianuf22</code>), a software engineer passionate about building high-performance web applications, modern architectures, and delightful user experiences.</p>\n<h2>What You&#39;ll Find Here</h2>\n<p>On this blog, I share thoughts, tutorials, and deep-dives into:</p>\n<ul>\n<li><strong>Frontend Development</strong>: Modern JavaScript/TypeScript, CSS Custom Properties, and View Transitions API.</li>\n<li><strong>Software Architecture</strong>: Clean code, static site generation, and performance optimization.</li>\n<li><strong>Open Source &amp; Tools</strong>: GitHub Workflows, Vite, and developer productivity tools.</li>\n</ul>\n<pre><code class=\"language-js\">// Example: Welcome greeting function\nfunction greet(visitor) {\n  console.log(`Welcome to my blog, ${visitor}! Stay tuned for new posts.`);\n}\n\ngreet(&#39;developer&#39;);\n</code></pre>\n<p>Stay tuned for more articles! Feel free to connect with me on <a href=\"https://github.com/adrianuf22\">GitHub</a> or <a href=\"https://www.linkedin.com/in/adriano-caetano-fs/\">LinkedIn</a>.</p>\n"
-  },
-  {
-    "slug": "2026-08-20-building-a-modern-github-pages-site",
-    "title": "Building a Modern GitHub Pages Site with Vite",
-    "date": "2026-08-20T00:00:00.000Z",
-    "formattedDate": "August 19, 2026",
-    "summary": "How to build and deploy a modern static web application to GitHub Pages using Vite, native ES Modules, and GitHub Actions.",
-    "tags": [
-      "vite",
-      "github-pages",
-      "javascript",
-      "web-dev"
-    ],
-    "readingTime": "1 min read",
-    "html": "<h1>Building a Modern GitHub Pages Site with Vite</h1>\n<p>GitHub Pages is one of the easiest ways to host static websites. By pairing it with <strong>Vite</strong> and <strong>GitHub Actions</strong>, you get an automated, lightning-fast deployment pipeline.</p>\n<h2>Why Vite?</h2>\n<p>Traditional build setups like Grunt or webpack require extensive configuration. Vite offers:</p>\n<ol>\n<li><strong>Instant Server Start</strong>: Uses native ES modules during development.</li>\n<li><strong>Lightning Fast HMR</strong>: Hot Module Replacement that updates instantly regardless of app size.</li>\n<li><strong>Optimized Production Builds</strong>: Rollup-powered static bundling out of the box.</li>\n</ol>\n<h2>Automating Deployment with GitHub Actions</h2>\n<p>With GitHub Actions <code>actions/deploy-pages@v4</code>, you can build and publish directly to GitHub Pages on every <code>push</code> to <code>main</code>:</p>\n<pre><code class=\"language-yaml\">name: Deploy to GitHub Pages\n\non:\n  push:\n    branches: [main, master]\n\njobs:\n  build:\n    runs-on: ubuntu-latest\n    steps:\n      - uses: actions/checkout@v4\n      - uses: actions/setup-node@v4\n        with:\n          node-version: 20\n      - run: npm ci\n      - run: npm run build\n      - uses: actions/upload-pages-artifact@v3\n        with:\n          path: ./dist\n</code></pre>\n<blockquote>\n<p><strong>Tip</strong>: Ensure your repository&#39;s Pages settings are configured to use <strong>GitHub Actions</strong> as the deployment source!</p>\n</blockquote>\n"
+    "html": "<h1>Welcome to My Blog!</h1>\n<p>I&#39;m <strong>Adriano Caetano</strong> (<code>adrianuf22</code>), a software engineer passionate about building high-performance web applications, modern architectures, and delightful user experiences.</p>\n<p>I created this space to centralize my daily findings, quick snippets, and straightforward solutions, like how to set up specific software and services, without the fluff.</p>\n<h2>What You&#39;ll Find Here</h2>\n<ul>\n<li>Straight-to-the-point technical snippets and configurations</li>\n<li>Backend development tips</li>\n<li>Software architecture notes</li>\n<li>Homelab setup guides</li>\n<li>AI tools and tuning</li>\n</ul>\n<p>Stay tuned for more articles! Feel free to connect with me on <a href=\"https://github.com/adrianuf22\">GitHub</a> or <a href=\"https://www.linkedin.com/in/adriano-caetano-fs/\">LinkedIn</a>.</p>\n"
   }
 ]
