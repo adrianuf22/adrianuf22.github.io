@@ -97,14 +97,38 @@
           </div>
         </div>
 
-        <!-- Character Selection Badges & Hint -->
+        <!-- Character Selection Badges -->
         <div class="character-controls">
           <div id="character-badges" class="character-badges">
             <!-- Dynamically populated badges -->
           </div>
         </div>
       </div>
+
+      <!-- Posts Trigger Heading at bottom of first page -->
+      <div class="posts-header" id="posts-heading" role="button" tabindex="0" title="Click to view posts">
+        <h2>Posts</h2>
+        <span class="scroll-indicator-icon">↓</span>
+      </div>
     </main>
+
+    <!-- Posts Section -->
+    <section id="posts-section" class="posts-section">
+      <div id="posts-grid" class="posts-grid">
+        <!-- Dynamically populated posts -->
+      </div>
+    </section>
+
+    <!-- Post Article Reader Modal -->
+    <div id="post-modal" class="post-modal" aria-hidden="true">
+      <div class="post-modal-backdrop" id="post-modal-backdrop"></div>
+      <div class="post-modal-content">
+        <button id="post-modal-close" class="post-modal-close" aria-label="Close article">✕</button>
+        <article id="post-article" class="post-article">
+          <!-- Post content injected here -->
+        </article>
+      </div>
+    </div>
 
     <!-- Footer -->
     <footer>

@@ -1,6 +1,6 @@
 /**
- * Modern Application Logic for adrianu.com.br
- * Character Avatar Switcher & Interactive Web Application
+ * Modern Application Logic for adrianuf22.github.io
+ * Character Avatar Switcher & Markdown Blog Engine
  */
 
 const CHARACTERS = [
@@ -17,6 +17,12 @@ class AvatarApp {
     this.badgeContainer = document.getElementById('character-badges');
     this.mobileToggle = document.getElementById('mobile-toggle');
     this.socialMenu = document.querySelector('.social-menu');
+    this.postsHeading = document.getElementById('posts-heading');
+    this.postsGrid = document.getElementById('posts-grid');
+    this.postModal = document.getElementById('post-modal');
+    this.postModalClose = document.getElementById('post-modal-close');
+    this.postModalBackdrop = document.getElementById('post-modal-backdrop');
+    this.postArticle = document.getElementById('post-article');
 
     // Touch / Gesture state
     this.startX = 0;
@@ -24,21 +30,80 @@ class AvatarApp {
     this.startTime = 0;
     this.isSwiping = false;
 
+    // Blog posts
+    this.posts = [];
+
     this.init();
   }
 
   init() {
+    this.initScrollbarBehavior();
     this.renderBadges();
     this.updateAvatar(this.currentIndex, 'forward');
     this.bindEvents();
+    this.loadPosts();
+  }
+
+  initScrollbarBehavior() {
+    let isUnlocked = false;
+
+    const lockScroll = () => {
+      isUnlocked = false;
+      document.body.classList.add('lock-scroll');
+      document.documentElement.classList.add('lock-scroll');
+    };
+
+    const unlockScroll = () => {
+      isUnlocked = true;
+      document.body.classList.remove('lock-scroll');
+      document.documentElement.classList.remove('lock-scroll');
+    };
+
+    const unlockScrollAndScrollToPosts = () => {
+      unlockScroll();
+      const postsSection = document.getElementById('posts-section');
+      if (postsSection) {
+        postsSection.scrollIntoView({ behavior: 'smooth' });
+      }
+    };
+
+    // Lock scroll initially on page load
+    lockScroll();
+
+    // Re-lock scrollbar when scrolling back to top
+    window.addEventListener('scroll', () => {
+      if (window.scrollY <= 0 && isUnlocked) {
+        lockScroll();
+      }
+    }, { passive: true });
+
+    // Unlock on wheel scroll down, or re-lock on scroll up at top
+    window.addEventListener('wheel', (e) => {
+      if (e.deltaY > 0 && !isUnlocked) {
+        unlockScrollAndScrollToPosts();
+      } else if (e.deltaY < 0 && window.scrollY <= 10 && isUnlocked) {
+        lockScroll();
+      }
+    }, { passive: true });
+
+    // Click or keypress on "Posts" heading unlocks scroll and smooth scrolls to posts section
+    if (this.postsHeading) {
+      this.postsHeading.addEventListener('click', unlockScrollAndScrollToPosts);
+
+      this.postsHeading.addEventListener('keydown', (e) => {
+        if (e.key === 'Enter' || e.key === ' ') {
+          e.preventDefault();
+          unlockScrollAndScrollToPosts();
+        }
+      });
+    }
   }
 
   bindEvents() {
-    // Stage Click (Cycle next)
+    // Stage Click (Cycle next avatar body)
     const stageContainer = document.querySelector('.slide-body-container');
     if (stageContainer) {
       stageContainer.addEventListener('click', (e) => {
-        // Prevent click trigger if completing a swipe gesture
         if (this.isSwiping) return;
         this.nextCharacter();
       });
@@ -51,10 +116,13 @@ class AvatarApp {
 
     // Keyboard Arrow Navigation
     window.addEventListener('keydown', (e) => {
-      if (e.key === 'ArrowRight' || e.key === 'ArrowDown') {
+      if (e.target.tagName === 'INPUT' || e.target.tagName === 'TEXTAREA') return;
+      if (e.key === 'ArrowRight') {
         this.nextCharacter();
-      } else if (e.key === 'ArrowLeft' || e.key === 'ArrowUp') {
+      } else if (e.key === 'ArrowLeft') {
         this.prevCharacter();
+      } else if (e.key === 'Escape') {
+        this.closePostModal();
       }
     });
 
@@ -71,6 +139,14 @@ class AvatarApp {
         }
       });
     }
+
+    // Post Modal Reader Controls
+    if (this.postModalClose) {
+      this.postModalClose.addEventListener('click', () => this.closePostModal());
+    }
+    if (this.postModalBackdrop) {
+      this.postModalBackdrop.addEventListener('click', () => this.closePostModal());
+    }
   }
 
   handlePointerDown(e) {
@@ -85,7 +161,6 @@ class AvatarApp {
     const deltaY = e.clientY - this.startY;
     const deltaTime = Date.now() - this.startTime;
 
-    // Check if horizontal swipe criterion is met (> 40px within 400ms, mostly horizontal)
     if (deltaTime < 400 && Math.abs(deltaX) > 40 && Math.abs(deltaX) > Math.abs(deltaY)) {
       this.isSwiping = true;
       if (deltaX < 0) {
@@ -119,7 +194,6 @@ class AvatarApp {
       const oldChar = CHARACTERS[this.currentIndex];
       const newChar = CHARACTERS[newIndex];
 
-      // Update character body class
       if (this.container) {
         this.container.classList.remove(`body-${oldChar.id}`);
         this.container.classList.add(`body-${newChar.id}`);
@@ -128,13 +202,11 @@ class AvatarApp {
       this.currentIndex = newIndex;
       this.updateBadges();
 
-      // Trigger light vibration if supported
       if (navigator.vibrate) {
         navigator.vibrate(15);
       }
     };
 
-    // Use View Transitions API if available, else immediate fallback
     if (document.startViewTransition) {
       document.startViewTransition({
         update: updateDOM,
@@ -172,6 +244,79 @@ class AvatarApp {
         btn.classList.remove('active');
       }
     });
+  }
+
+  // Blog Posts Fetching & Rendering
+  async loadPosts() {
+    try {
+      // Try root or relative paths for GitHub Pages compatibility
+      const res = await fetch('posts.json').catch(() => fetch('/posts.json'));
+      if (!res.ok) throw new Error(`HTTP error ${res.status}`);
+      this.posts = await res.json();
+      this.renderPosts();
+    } catch (err) {
+      console.error('Failed to load blog posts:', err);
+      if (this.postsGrid) {
+        this.postsGrid.innerHTML = `<p style="color: rgba(255,255,255,0.7); text-align: center;">No posts available yet.</p>`;
+      }
+    }
+  }
+
+  renderPosts() {
+    if (!this.postsGrid) return;
+    this.postsGrid.innerHTML = '';
+
+    if (!this.posts || this.posts.length === 0) {
+      this.postsGrid.innerHTML = `<p style="color: rgba(255,255,255,0.7); text-align: center;">No posts found.</p>`;
+      return;
+    }
+
+    this.posts.forEach((post) => {
+      const card = document.createElement('article');
+      card.className = 'post-card';
+      card.setAttribute('tabindex', '0');
+      card.setAttribute('aria-label', `Read ${post.title}`);
+
+      const tagsHTML = (post.tags || []).map(tag => `<span class="post-tag">#${tag}</span>`).join('');
+
+      card.innerHTML = `
+        <div class="post-card-meta">
+          <span class="post-date">📅 ${post.formattedDate || post.date}</span>
+          <span class="post-reading-time">⏱️ ${post.readingTime || ''}</span>
+        </div>
+        <h3 class="post-card-title">${post.title}</h3>
+        <p class="post-card-summary">${post.summary}</p>
+        <div class="post-card-tags">${tagsHTML}</div>
+      `;
+
+      card.addEventListener('click', () => this.openPostModal(post));
+      card.addEventListener('keydown', (e) => {
+        if (e.key === 'Enter') this.openPostModal(post);
+      });
+
+      this.postsGrid.appendChild(card);
+    });
+  }
+
+  openPostModal(post) {
+    if (!this.postModal || !this.postArticle) return;
+    this.postArticle.innerHTML = `
+      <div class="post-card-meta" style="margin-bottom: 16px;">
+        <span class="post-date">📅 ${post.formattedDate || post.date}</span>
+        <span class="post-reading-time">⏱️ ${post.readingTime || ''}</span>
+      </div>
+      ${post.html}
+    `;
+    this.postModal.classList.add('open');
+    this.postModal.setAttribute('aria-hidden', 'false');
+    document.body.style.overflow = 'hidden';
+  }
+
+  closePostModal() {
+    if (!this.postModal) return;
+    this.postModal.classList.remove('open');
+    this.postModal.setAttribute('aria-hidden', 'true');
+    document.body.style.overflow = '';
   }
 }
 
