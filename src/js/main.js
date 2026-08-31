@@ -272,9 +272,9 @@ class AvatarApp {
     }
 
     this.posts.forEach((post) => {
-      const card = document.createElement('article');
+      const card = document.createElement('a');
       card.className = 'post-card';
-      card.setAttribute('tabindex', '0');
+      card.href = `./posts/${post.slug}.html`;
       card.setAttribute('aria-label', `Read ${post.title}`);
 
       const tagsHTML = (post.tags || []).map(tag => `<span class="post-tag">#${tag}</span>`).join('');
@@ -288,11 +288,6 @@ class AvatarApp {
         <p class="post-card-summary">${post.summary}</p>
         <div class="post-card-tags">${tagsHTML}</div>
       `;
-
-      card.addEventListener('click', () => this.openPostModal(post));
-      card.addEventListener('keydown', (e) => {
-        if (e.key === 'Enter') this.openPostModal(post);
-      });
 
       this.postsGrid.appendChild(card);
     });
