@@ -1,0 +1,102 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Running Claude Code in Safehouse while keeping Superset agent status | adrianuf22 :: software engineer</title>
+
+  <!-- SEO & Meta Tags -->
+  <meta name="description" content="How to run Claude Code inside Safehouse while keeping Superset agent status">
+  <meta name="author" content="Adriano Caetano">
+  <meta name="theme-color" content="#0b1320">
+
+  <!-- Open Graph / Social Sharing -->
+  <meta property="og:title" content="Running Claude Code in Safehouse while keeping Superset agent status">
+  <meta property="og:description" content="How to run Claude Code inside Safehouse while keeping Superset agent status">
+  <meta property="og:type" content="article">
+  <meta property="og:image" content="/images/favicon.png">
+
+  <!-- Favicon -->
+  <link rel="icon" type="image/png" href="/images/favicon.png">
+
+  <!-- Stylesheet -->
+  <link rel="stylesheet" href="/src/styles/main.css">
+</head>
+<body class="post-page-body">
+  <div class="app-container">
+    <!-- Header -->
+    <header>
+      <div class="topbar">
+        <div class="left-content">
+          <a href="/" class="heading-title" aria-label="adrianuf22.github.io Home">
+            <h1>adrianu<span class="heading-blue">f22</span></h1>
+            <span class="title-tag">Software Engineer</span>
+          </a>
+        </div>
+
+        <div class="right-content">
+          <a href="/" class="back-home-btn" aria-label="Back to home page">← Back to Home</a>
+        </div>
+      </div>
+    </header>
+
+    <!-- Main Article Body -->
+    <main class="post-page-main">
+      <article class="post-page-container">
+        <div class="post-card-meta" style="margin-bottom: 16px;">
+          <span class="post-date">📅 September 1, 2026</span>
+          <span class="post-reading-time">⏱️ 2 min read</span>
+        </div>
+
+        <h1 class="post-page-title">Running Claude Code in Safehouse while keeping Superset agent status</h1>
+
+        <div class="post-card-tags" style="margin-bottom: 24px;">
+          <span class="post-tag">#safehouse</span> <span class="post-tag">#superset</span> <span class="post-tag">#claude-code</span> <span class="post-tag">#agent-status</span>
+        </div>
+
+        <div class="post-article">
+          <h1>Running Claude Code in Safehouse while keeping Superset agent status</h1>
+<p>I use <a href="https://superset.sh">Superset</a> to orchestrate my AI coding sessions and Git worktrees, and <a href="https://agent-safehouse.dev">Agent Safehouse</a> to sandbox the agents.</p>
+<p>The setup works well, except for one problem: <strong>Superset couldn&#39;t detect the agent status when Claude Code was running inside Safehouse.</strong></p>
+<p>Superset uses lifecycle hooks and environment variables to track the agent status. Its hooks check for Superset-provided environment variables before reporting the agent state.</p>
+<p>Safehouse, on the other hand, sanitizes the environment by default. It supports explicitly passing selected environment variables with <code>--env-pass</code>.</p>
+<p>So the problem wasn&#39;t a missing filesystem permission or a Safehouse networking rule. <strong>The <code>SUPERSET_*</code> environment variables simply weren&#39;t reaching Claude Code inside the sandbox.</strong></p>
+<p>The fix was to pass all Superset variables through Safehouse:</p>
+<pre><code class="language-bash">safehouse \
+  --enable=shell-init \
+  --enable=docker \
+  --env-pass=&quot;$(env | grep &#39;^SUPERSET_&#39; | sed &#39;s/=.*//&#39; | paste -sd, -)&quot; \
+  --add-dirs=~/my-ai-skills:~/.superset \
+  -- \
+  claude
+</code></pre>
+<p>The important part is:</p>
+<pre><code class="language-bash">--env-pass=&quot;$(env | grep &#39;^SUPERSET_&#39; | sed &#39;s/=.*//&#39; | paste -sd, -)&quot;
+</code></pre>
+<p>This dynamically gets the names of all <code>SUPERSET_*</code> variables from the current environment and tells Safehouse to pass them into the sandbox.</p>
+<p>I also use:</p>
+<ul>
+<li><code>--enable=shell-init</code> because I want the normal shell initialization inside the sandbox.</li>
+<li><code>--enable=docker</code> because Claude needs Docker access.</li>
+<li><code>--add-dirs=~/my-ai-skills:~/.superset</code> to expose my AI skills and Superset&#39;s directory.</li>
+<li><code>-- claude</code> to run Claude Code inside the Safehouse sandbox.</li>
+</ul>
+<p>After passing the <code>SUPERSET_*</code> environment variables, <strong>Superset agent status</strong> works normally again while Claude remains sandboxed.</p>
+<p>So if you&#39;re using Superset + Safehouse and agent status isn&#39;t working, check the environment first. You probably don&#39;t need to weaken the Safehouse sandbox — you just need to pass Superset&#39;s environment variables through it.</p>
+
+        </div>
+      </article>
+    </main>
+
+    <!-- Footer -->
+    <footer>
+      <div class="copyright">
+        &copy; 2026 Adriano Caetano. All rights reserved.
+      </div>
+      <div class="dev-credits">
+        <span>Hosted on <a href="https://pages.github.com/" target="_blank" rel="noopener">GitHub Pages</a></span>
+      </div>
+    </footer>
+  </div>
+</body>
+</html>
