@@ -55,8 +55,7 @@
         </div>
 
         <div class="post-article">
-          <h1>Running Claude Code in Safehouse while keeping Superset agent status</h1>
-<p>I use <a href="https://superset.sh">Superset</a> to orchestrate my AI coding sessions and Git worktrees, and <a href="https://agent-safehouse.dev">Agent Safehouse</a> to sandbox the agents.</p>
+          <p>I use <a href="https://superset.sh">Superset</a> to orchestrate my AI coding sessions and Git worktrees, and <a href="https://agent-safehouse.dev">Agent Safehouse</a> to sandbox the agents.</p>
 <p>The setup works well, except for one problem: <strong>Superset couldn&#39;t detect the agent status when Claude Code was running inside Safehouse.</strong></p>
 <p>Superset uses lifecycle hooks and environment variables to track the agent status. Its hooks check for Superset-provided environment variables before reporting the agent state.</p>
 <p>Safehouse, on the other hand, sanitizes the environment by default. It supports explicitly passing selected environment variables with <code>--env-pass</code>.</p>
@@ -83,7 +82,6 @@
 </ul>
 <p>After passing the <code>SUPERSET_*</code> environment variables, <strong>Superset agent status</strong> works normally again while Claude remains sandboxed.</p>
 <p>So if you&#39;re using Superset + Safehouse and agent status isn&#39;t working, check the environment first. You probably don&#39;t need to weaken the Safehouse sandbox — you just need to pass Superset&#39;s environment variables through it.</p>
-
         </div>
       </article>
     </main>

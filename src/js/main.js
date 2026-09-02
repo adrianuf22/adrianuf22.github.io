@@ -271,7 +271,12 @@ class AvatarApp {
       return;
     }
 
-    this.posts.forEach((post) => {
+    // Deduplicate posts by slug to prevent any duplicate rendering
+    const uniquePostsMap = new Map();
+    this.posts.forEach(p => uniquePostsMap.set(p.slug, p));
+    const uniquePosts = Array.from(uniquePostsMap.values());
+
+    uniquePosts.forEach((post) => {
       const card = document.createElement('a');
       card.className = 'post-card';
       card.href = `./posts/${post.slug}.html`;

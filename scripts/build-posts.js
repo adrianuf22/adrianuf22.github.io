@@ -114,7 +114,10 @@ function compilePosts() {
     const { data: frontmatter, content } = matter(rawContent);
 
     const slug = filename.replace(/\.md$/, '');
-    const htmlContent = marked.parse(content);
+    let htmlContent = marked.parse(content).trim();
+
+    // Strip leading <h1> if present in Markdown body to avoid duplicating frontmatter title
+    htmlContent = htmlContent.replace(/^<h1[^>]*>.*?<\/h1>\s*/i, '');
 
     // Calculate estimated reading time
     const wordCount = content.trim().split(/\s+/).length;
@@ -146,15 +149,20 @@ function compilePosts() {
     fs.writeFileSync(rootPostFile, postHTML, 'utf-8');
   });
 
+  // Deduplicate posts by slug to prevent any duplicate entries
+  const uniquePostsMap = new Map();
+  posts.forEach(p => uniquePostsMap.set(p.slug, p));
+  const uniquePosts = Array.from(uniquePostsMap.values());
+
   // Sort posts by date descending (latest first)
-  posts.sort((a, b) => new Date(b.date) - new Date(a.date));
+  uniquePosts.sort((a, b) => new Date(b.date) - new Date(a.date));
 
   // Write JSON output
-  const jsonContent = JSON.stringify(posts, null, 2);
+  const jsonContent = JSON.stringify(uniquePosts, null, 2);
   fs.writeFileSync(PUBLIC_OUTPUT_FILE, jsonContent, 'utf-8');
   fs.writeFileSync(ROOT_OUTPUT_FILE, jsonContent, 'utf-8');
 
-  console.log(`Successfully compiled ${posts.length} markdown post(s) to HTML & JSON -> public/posts/ & posts/`);
+  console.log(`Successfully compiled ${uniquePosts.length} markdown post(s) to HTML & JSON -> public/posts/ & posts/`);
 }
 
 compilePosts();
